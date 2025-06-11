@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expensex/auth/auth_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -93,7 +94,7 @@ class ProfileScreen extends StatelessWidget {
                                 final name = snapshot.data ?? 'No Name';
                                 return Text(
                                   name,
-                                  style: TextStyle(
+                                  style:  GoogleFonts.nunitoSans(
                                     fontSize: 24,
                                     fontWeight: FontWeight.w700,
                                     color: theme.colorScheme.primary,
@@ -105,7 +106,7 @@ class ProfileScreen extends StatelessWidget {
                             const SizedBox(height: 8),
                             Text(
                               user?.email ?? 'No Email',
-                              style: TextStyle(
+                              style:  GoogleFonts.nunitoSans(
                                 fontSize: 17,
                                 fontWeight: FontWeight.w500,
                                 color: theme.colorScheme.onSurface,
@@ -126,9 +127,9 @@ class ProfileScreen extends StatelessWidget {
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         icon: const Icon(Icons.logout, color: Colors.white),
-                        label: const Text(
+                        label: Text(
                           'Logout',
-                          style: TextStyle(
+                          style:  GoogleFonts.nunitoSans(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 0.5,
@@ -150,7 +151,7 @@ class ProfileScreen extends StatelessWidget {
                     // App version or copyright
                     Text(
                       'ExpenseX v1.0',
-                      style: TextStyle(
+                      style:  GoogleFonts.nunitoSans(
                         color: theme.colorScheme.primary.withAlpha(120),
                         fontSize: 13,
                         letterSpacing: 1,

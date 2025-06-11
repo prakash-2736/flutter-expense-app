@@ -75,6 +75,7 @@
 //   }
 // }
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'home_screen.dart';
 import 'profile_screen.dart';
 
@@ -204,10 +205,10 @@ class _NavTab extends StatelessWidget {
               const SizedBox(height: 2),
               AnimatedDefaultTextStyle(
                 duration: const Duration(milliseconds: 350),
-                style: TextStyle(
+                style: GoogleFonts.nunitoSans(
                   color: selected ? color : unselectedColor,
                   fontWeight: selected ? FontWeight.bold : FontWeight.normal,
-                  fontSize: selected ? 14 : 12,
+                  fontSize: selected ? 13 : 12,
                 ),
                 child: Text(label),
               ),

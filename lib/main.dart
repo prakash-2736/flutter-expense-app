@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expensex/utils/app_styles.dart';
 import 'package:expensex/auth/auth_screen.dart';
 import 'package:expensex/screens/main_screen.dart';
+import 'package:expensex/utils/user.data.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -39,10 +41,34 @@ class AuthWrapper extends StatelessWidget {
             body: Center(child: CircularProgressIndicator()),
           );
         }
+
         if (snapshot.hasData) {
-          return const MainScreen();
+          return FutureBuilder<DocumentSnapshot>(
+            future: FirebaseFirestore.instance
+                .collection('users')
+                .doc(snapshot.data!.uid)
+                .get(),
+            builder: (context, userSnapshot) {
+              if (userSnapshot.connectionState == ConnectionState.waiting) {
+                return const Scaffold(
+                  body: Center(child: CircularProgressIndicator()),
+                );
+              }
+
+              if (userSnapshot.hasData && userSnapshot.data!.exists) {
+                final data = userSnapshot.data!.data() as Map<String, dynamic>;
+                UserData.name = data['name'] ?? 'User';
+                return const MainScreen();
+              } else {
+                return const Scaffold(
+                  body: Center(child: Text("User not found")),
+                );
+              }
+            },
+          );
         }
-        return AuthScreen();
+
+        return const AuthScreen();
       },
     );
   }

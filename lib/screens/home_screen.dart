@@ -1,4 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+
+import 'package:expensex/utils/user.data.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -18,17 +19,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final FirestoreService _firestore = FirestoreService();
   String? _selectedMonth;
-  late final String _currentMonth;
-  Future<String?> _fetchUserName() async {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid == null) return null;
 
-    final doc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .get();
-    return doc.data()?['name'] as String?;
-  }
+  late final String _currentMonth;
 
   @override
   void initState() {
@@ -37,57 +29,58 @@ class _HomeScreenState extends State<HomeScreen> {
     _selectedMonth = _currentMonth;
   }
 
+  // Future<void> _loadUserName() async {
+  //   final uid = FirebaseAuth.instance.currentUser?.uid;
+  //   if (uid != null) {
+  //     final doc = await FirebaseFirestore.instance
+  //         .collection('users')
+  //         .doc(uid)
+  //         .get();
+  //     setState(() {
+  //       _userName = doc.data()?['name'];
+  //       _isLoading = false;
+  //     });
+  //   }
+  // }
+
   @override
   Widget build(BuildContext context) {
     final userId = FirebaseAuth.instance.currentUser?.uid ?? '';
-    final user = FirebaseAuth.instance.currentUser;
-    final theme = Theme.of(context);
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6FA),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-      ),
+
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            FutureBuilder<String?>(
-              future: _fetchUserName(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator();
-                } else if (snapshot.hasError) {
-                  return const Text('Error fetching name');
-                } else if (!snapshot.hasData || snapshot.data == null) {
-                  return const Text('No name found');
-                } else {
-                  return Column(
+            const SizedBox(height: 15),
+            UserData.name == null
+                ? const SizedBox()
+                : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    spacing: 3,
                     children: [
+                      const SizedBox(height: 15),
                       Text(
                         'Welcome 👋',
                         style: GoogleFonts.nunitoSans(
                           fontSize: 22,
                           color: Colors.grey.shade600,
-                          fontWeight: FontWeight.w500
-                        )
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                       Text(
-                        '${snapshot.data!}!',
-                        style:  GoogleFonts.nunitoSans(
+                        '${UserData.name}!',
+                        style: GoogleFonts.nunitoSans(
                           fontSize: 28,
                           color: Colors.grey.shade900,
-                          fontWeight: FontWeight.w600
-                        )
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ],
-                  );
-                }
-              },
-            ),
-            SizedBox(height: 20,),
+                  ),
+
+            SizedBox(height: 20),
             _buildMonthlyCard(userId),
             _buildTripListHeader(),
             _buildTripList(userId),
@@ -103,12 +96,15 @@ class _HomeScreenState extends State<HomeScreen> {
       stream: _firestore.getMonthlySummaries(userId),
       builder: (context, snapshot) {
         final monthlyTotal = _calculateMonthlyTotal(snapshot.data);
-    
+
         return Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [Color.fromARGB(255, 241, 238, 255), Color.fromARGB(255, 189, 181, 255)],
+              colors: [
+                Color.fromARGB(255, 241, 238, 255),
+                Color.fromARGB(255, 189, 181, 255),
+              ],
             ),
             borderRadius: BorderRadius.circular(20),
           ),
@@ -138,10 +134,11 @@ class _HomeScreenState extends State<HomeScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'This Months Expense', style: GoogleFonts.nunitoSans(
+          'This Months Expense',
+          style: GoogleFonts.nunitoSans(
             fontSize: 14,
             color: Colors.grey.shade700,
-            fontWeight: FontWeight.w500
+            fontWeight: FontWeight.w500,
           ),
         ),
         const SizedBox(height: 8),
@@ -150,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
           style: GoogleFonts.nunitoSans(
             fontSize: 30,
             color: Colors.grey.shade900,
-            fontWeight: FontWeight.w700
+            fontWeight: FontWeight.w700,
           ),
         ),
       ],
@@ -166,7 +163,10 @@ class _HomeScreenState extends State<HomeScreen> {
       dropdownColor: const Color.fromARGB(255, 255, 255, 255),
       iconEnabledColor: const Color.fromARGB(255, 25, 25, 25),
       underline: const SizedBox(),
-      style: const TextStyle(color: Color.fromARGB(255, 27, 27, 27), fontWeight: FontWeight.bold),
+      style: const TextStyle(
+        color: Color.fromARGB(255, 27, 27, 27),
+        fontWeight: FontWeight.bold,
+      ),
       items: months
           .map((month) => DropdownMenuItem(value: month, child: Text(month)))
           .toList(),
@@ -185,7 +185,7 @@ class _HomeScreenState extends State<HomeScreen> {
             style: GoogleFonts.nunitoSans(
               fontSize: 18,
               color: Colors.grey.shade800,
-              fontWeight: FontWeight.w600
+              fontWeight: FontWeight.w600,
             ),
           ),
           Text(
@@ -231,20 +231,17 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildTripCard(TripModel trip) {
     return GestureDetector(
       onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => TripDetailScreen(trip: trip)),
-              ),
+        context,
+        MaterialPageRoute(builder: (_) => TripDetailScreen(trip: trip)),
+      ),
       child: Container(
         padding: EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
-          boxShadow: [ 
-            BoxShadow(
-              blurRadius: 20,
-              color: const Color.fromARGB(10, 0, 0, 0),
-            )
-          ]
+          boxShadow: [
+            BoxShadow(blurRadius: 20, color: const Color.fromARGB(10, 0, 0, 0)),
+          ],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -258,43 +255,43 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: GoogleFonts.nunitoSans(
                     fontSize: 24,
                     color: Colors.grey.shade900,
-                    fontWeight: FontWeight.w600
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-      
+
                 Text(
                   'Created on ${DateFormat.yMMMd().format(trip.createdAt)}',
                   style: GoogleFonts.nunitoSans(
                     fontSize: 16,
                     color: Colors.grey.shade700,
-                    fontWeight: FontWeight.w500
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
             ),
-      
+
             Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                spacing: 2,
-                children: [
-                  Text(
-                    'Total',
-                    style: GoogleFonts.nunitoSans(
-                      fontSize: 14,
-                      color: Colors.grey.shade700,
-                      fontWeight: FontWeight.w500
-                    ),
+              crossAxisAlignment: CrossAxisAlignment.end,
+              spacing: 2,
+              children: [
+                Text(
+                  'Total',
+                  style: GoogleFonts.nunitoSans(
+                    fontSize: 14,
+                    color: Colors.grey.shade700,
+                    fontWeight: FontWeight.w500,
                   ),
-                  Text(
-                    '₹${trip.total.toStringAsFixed(2)}',
-                    style: GoogleFonts.nunitoSans(
-                      fontSize: 24,
-                      color: Colors.grey.shade900,
-                      fontWeight: FontWeight.w700
-                    ),
+                ),
+                Text(
+                  '₹${trip.total.toStringAsFixed(2)}',
+                  style: GoogleFonts.nunitoSans(
+                    fontSize: 24,
+                    color: Colors.grey.shade900,
+                    fontWeight: FontWeight.w700,
                   ),
-                ],
-              ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -304,10 +301,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildAddButton(BuildContext context) {
     return FloatingActionButton(
       onPressed: () => showAddTripDialog(context),
-      backgroundColor: const Color(0xFF7F00FF),
+      backgroundColor: Color.fromARGB(255, 126, 114, 253),
       shape: const CircleBorder(),
       child: const Icon(Icons.add, size: 32),
     );
   }
 }
-

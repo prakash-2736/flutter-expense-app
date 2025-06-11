@@ -106,6 +106,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:expensex/services/firestore_service.dart';
 
@@ -162,20 +163,32 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   Widget build(BuildContext context) {
     final bgColor = Theme.of(context).colorScheme.surface;
     final gradient = const LinearGradient(
-      colors: [Color.fromARGB(255, 152, 77, 227), Color(0xFFE100FF)],
+      colors: [
+        Color.fromARGB(255, 241, 238, 255),
+        Color.fromARGB(255, 189, 181, 255),
+      ],
       begin: Alignment.centerLeft,
       end: Alignment.centerRight,
     );
-
+    // colors: [Color.fromARGB(255, 152, 77, 227), Color(0xFFE100FF)],
     return Scaffold(
       backgroundColor: bgColor,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(
           "Add Expense",
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+          style: GoogleFonts.nunitoSans(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+            color: Colors.grey.shade900,
+          ),
         ),
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: Color.fromARGB(
+          255,
+          238,
+          236,
+          252,
+        ), //Theme.of(context).colorScheme.primary,
         foregroundColor: Colors.white,
         elevation: 3,
         centerTitle: true,
@@ -183,9 +196,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: Icon(Icons.arrow_back_ios),
+          icon: Icon(Icons.arrow_back_ios, color: Colors.grey.shade800),
         ),
-       
+
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
         ),
@@ -209,7 +222,12 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                     borderRadius: BorderRadius.circular(32),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color.fromARGB(255, 241, 195, 249), // No opacity
+                        color: const Color.fromARGB(
+                          255,
+                          237,
+                          240,
+                          250,
+                        ), // No opacity
                         blurRadius: 12,
                         offset: const Offset(0, 4),
                       ),
@@ -218,22 +236,24 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                   child: TextFormField(
                     controller: _amountController,
                     keyboardType: TextInputType.number,
-                    style: const TextStyle(
+                    style: GoogleFonts.nunitoSans(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1,
                     ),
-                    decoration: const InputDecoration(
-                       filled: true, // <-- Add this
-                      fillColor:  Color.fromARGB(255, 233, 240, 251),                       border: InputBorder.none,
+                    decoration: InputDecoration(
+                      filled: true, // <-- Add this
+                      fillColor: Color.fromARGB(255, 244, 247, 252),
+                      border: InputBorder.none,
                       prefixText: '₹ ',
                       prefixStyle: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
-                        color: Colors.deepPurple,
+                        color: Color.fromARGB(255, 145, 92, 237),
                       ),
                       hintText: '0',
-                      hintStyle: TextStyle(
+
+                      hintStyle: GoogleFonts.nunitoSans(
                         color: Colors.grey,
                         fontWeight: FontWeight.w500,
                       ),
@@ -260,7 +280,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                               children: [
                                 Icon(
                                   _categoryIcon(cat),
-                                  color: const Color.fromARGB(255, 139, 94, 217),
+                                  color: const Color.fromARGB(255, 173, 135, 238),
                                 ),
                                 const SizedBox(width: 8),
                                 Text(cat),
@@ -270,10 +290,12 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                         )
                         .toList(),
                     onChanged: (value) => setState(() => _category = value!),
-                    decoration: const InputDecoration(
+                    decoration:  InputDecoration(
                       border: InputBorder.none,
-                       filled: true, // <-- Add this
-                      fillColor:  Color.fromARGB(255, 233, 240, 251),                       hintText: 'Category',
+                      filled: true, // <-- Add this
+                      fillColor: Color.fromARGB(255, 245, 249, 255),
+                      hintText: 'Category',
+                      hintStyle:  GoogleFonts.nunitoSans(),
                       contentPadding: EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 16,
@@ -290,10 +312,11 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                   ),
                   child: TextFormField(
                     controller: _titleController,
-                    style: const TextStyle(fontSize: 16),
+                    style:  GoogleFonts.nunitoSans(fontSize: 16),
                     decoration: const InputDecoration(
-                       filled: true, // <-- Add this
-                      fillColor:  Color.fromARGB(255, 233, 240, 251),                       border: InputBorder.none,
+                      filled: true, // <-- Add this
+                      fillColor: Color.fromARGB(255, 247, 250, 255),
+                      border: InputBorder.none,
                       prefixIcon: Icon(
                         Icons.edit_note,
                         color: Color.fromARGB(255, 156, 106, 242),
@@ -334,10 +357,13 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                             DateFormat(
                               'EEE, dd MMM yyyy',
                             ).format(_selectedDate),
-                            style: const TextStyle(fontSize: 16),
+                            style:  GoogleFonts.nunitoSans(fontSize: 16),
                           ),
                         ),
-                        const Icon(Icons.expand_more, color: Color.fromARGB(255, 182, 145, 246)),
+                        const Icon(
+                          Icons.expand_more,
+                          color: Color.fromARGB(255, 144, 142, 244),
+                        ),
                       ],
                     ),
                   ),
@@ -354,7 +380,12 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                       borderRadius: BorderRadius.circular(28),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color.fromARGB(255, 239, 178, 250), // No opacity
+                          color: const Color.fromARGB(
+                            255,
+                            247,
+                            232,
+                            249,
+                          ), // No opacity
                           blurRadius: 16,
                           offset: const Offset(0, 4),
                         ),
@@ -363,10 +394,10 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                     alignment: Alignment.center,
                     child: _isLoading
                         ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text(
+                        : Text(
                             'SAVE',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Colors.grey.shade900,
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
                               letterSpacing: 1.2,

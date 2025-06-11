@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-const Color primaryColor = Color(0xFF3F51B5); // Deep Indigo
-const Color secondaryColor = Color(0xFF7C4DFF); // Soft Purple Accent
+const Color primaryColor = Color.fromARGB(255, 90, 113, 247); // Deep Indigo
+const Color secondaryColor = Color.fromARGB(255, 140, 99, 254); // Soft Purple Accent
 const Color backgroundColor = Color(0xFFF6F7FB); // Soft Off-White
 const Color cardColor = Colors.white;
 const Color errorColor = Color(0xFFB00020);
@@ -26,7 +26,6 @@ class AppStyles {
     scaffoldBackgroundColor: backgroundColor,
     cardColor: cardColor,
     appBarTheme: const AppBarTheme(
-      backgroundColor: primaryColor,
       foregroundColor: Colors.white,
       elevation: 3,
       centerTitle: true,
@@ -38,7 +37,7 @@ class AppStyles {
       iconTheme: IconThemeData(color: Colors.white),
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: secondaryColor,
+      backgroundColor: Color.fromARGB(255, 149, 112, 253),
       foregroundColor: Colors.white,
       elevation: 4,
       shape: CircleBorder(),

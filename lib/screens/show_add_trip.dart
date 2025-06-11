@@ -68,6 +68,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 Future<void> showAddTripDialog(BuildContext context) async {
@@ -97,11 +98,9 @@ Future<void> showAddTripDialog(BuildContext context) async {
                   children: [
                     Text(
                       'New Trip',
-                      style: Theme.of(context).textTheme.headlineSmall
-                          ?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
+                      style: GoogleFonts.nunitoSans(fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.primary,fontSize: 24)
+                           
                     ),
                     IconButton(
                       icon: const Icon(Icons.close),
@@ -111,9 +110,10 @@ Future<void> showAddTripDialog(BuildContext context) async {
                 ),
                 const SizedBox(height: 24),
                 TextFormField(
+                   style: GoogleFonts.nunitoSans(),
                   controller: titleController,
                   decoration: InputDecoration(
-                    
+                    labelStyle: GoogleFonts.nunitoSans() ,
                     labelText: 'Trip Title',
                     border: OutlineInputBorder(
           
@@ -121,22 +121,24 @@ Future<void> showAddTripDialog(BuildContext context) async {
                     ),
                     prefixIcon: const Icon(Icons.flag),
                     filled: true, // <-- Add this
-                    fillColor: const Color.fromARGB(255, 233, 240, 251), 
+                    fillColor: const Color.fromARGB(255, 246, 250, 255), 
                   ),
                   
                   textInputAction: TextInputAction.next,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
+                  style: GoogleFonts.nunitoSans(),
                   controller: descriptionController,
                   decoration: InputDecoration(
                     labelText: 'Description (Optional)',
+                    labelStyle: GoogleFonts.nunitoSans(),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
                     prefixIcon: const Icon(Icons.description),
                      filled: true, // <-- Add this
-                    fillColor: const Color.fromARGB(255, 233, 240, 251),                   ),
+                    fillColor: const Color.fromARGB(255, 246, 248, 252),                   ),
                   maxLines: 2,
                 ),
                 const SizedBox(height: 24),
@@ -192,7 +194,7 @@ Future<void> showAddTripDialog(BuildContext context) async {
                           },
                     child: isSaving
                         ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text('Create Trip'),
+                        :  Text('Create Trip',style: GoogleFonts.nunitoSans(),),
                   ),
                 ),
               ],

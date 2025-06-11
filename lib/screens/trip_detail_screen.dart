@@ -86,11 +86,12 @@ class TripDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bgColor = Theme.of(context).colorScheme.surface;
     final userId = FirebaseAuth.instance.currentUser!.uid;
     final firestore = FirestoreService();
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: bgColor,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(
@@ -101,7 +102,7 @@ class TripDetailScreen extends StatelessWidget {
             fontWeight: FontWeight.w700
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Color.fromARGB(255, 238, 236, 252) ,
         surfaceTintColor: Colors.white,
         centerTitle: true,
         leading: IconButton(
@@ -119,9 +120,9 @@ class TripDetailScreen extends StatelessWidget {
         //     ),
         //   ),
         // ],
-        // shape: const RoundedRectangleBorder(
-        //   borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
-        // ),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+        ),
       ),
       body: StreamBuilder<List<ExpenseModel>>(
         stream: firestore.getExpenses(userId, trip.id),
@@ -135,10 +136,10 @@ class TripDetailScreen extends StatelessWidget {
 
           final expenses = snapshot.data ?? [];
           if (expenses.isEmpty) {
-            return const Center(
+            return  Center(
               child: Text(
                 'No expenses yet for this trip.',
-                style: TextStyle(fontSize: 16, color: Colors.grey),
+                style:  GoogleFonts.nunitoSans(fontSize: 16, color: Colors.grey),
               ),
             );
           }
@@ -150,7 +151,7 @@ class TripDetailScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               final expense = expenses[index];
               return Card(
-                color: Colors.white,
+                color:  Color.fromARGB(255, 242, 242, 247),
                 elevation: 1,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18),
@@ -171,14 +172,14 @@ class TripDetailScreen extends StatelessWidget {
                   ),
                   title: Text(
                     expense.title,
-                    style: const TextStyle(
+                    style:   GoogleFonts.nunitoSans(
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontSize: 18,
                     ),
                   ),
                   subtitle: Text(
                     '${expense.category} • ${DateFormat('MMM dd, yyyy').format(expense.date)}',
-                    style: const TextStyle(color: Colors.grey),
+                    style:   GoogleFonts.nunitoSans(color: Colors.grey.shade600),
                   ),
                   trailing: SizedBox(
                     width: 120, // Adjust width as needed
@@ -187,10 +188,10 @@ class TripDetailScreen extends StatelessWidget {
                       children: [
                         Text(
                           '₹${expense.amount.toStringAsFixed(2)}',
-                          style: const TextStyle(
+                          style:  GoogleFonts.nunitoSans(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
-                            color: Colors.indigo,
+                            color: const Color.fromARGB(255, 107, 127, 241),
                           ),
                         ),
                         IconButton(
@@ -222,7 +223,7 @@ class TripDetailScreen extends StatelessWidget {
           context,
           MaterialPageRoute(builder: (_) => AddExpenseScreen(tripId: trip.id)),
         ),
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: Color.fromARGB(255, 126, 114, 253),
         foregroundColor: Colors.white,
         elevation: 6,
         child: const Icon(Icons.add, size: 28),
