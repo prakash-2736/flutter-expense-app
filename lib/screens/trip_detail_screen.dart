@@ -73,6 +73,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:expensex/models/expense_model.dart';
 import 'package:expensex/models/trip_model.dart';
@@ -89,34 +90,38 @@ class TripDetailScreen extends StatelessWidget {
     final firestore = FirestoreService();
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(
           trip.title,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+          style: GoogleFonts.nunitoSans(
+            fontSize: 24,
+            color: Colors.grey.shade900,
+            fontWeight: FontWeight.w700
+          ),
         ),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Colors.white,
-        elevation: 3,
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
         centerTitle: true,
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: Icon(Icons.arrow_back_ios),
+          icon: Icon(Icons.arrow_back_ios, color: Colors.grey.shade800,),
         ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 12),
-            child: CircleAvatar(
-              backgroundColor: Colors.white24,
-              child: Icon(Icons.wallet, color: Colors.white, size: 20),
-            ),
-          ),
-        ],
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
-        ),
+        // actions: [
+        //   Padding(
+        //     padding: const EdgeInsets.only(right: 12),
+        //     child: CircleAvatar(
+        //       backgroundColor: Colors.white24,
+        //       child: Icon(Icons.wallet, color: Colors.white, size: 20),
+        //     ),
+        //   ),
+        // ],
+        // shape: const RoundedRectangleBorder(
+        //   borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+        // ),
       ),
       body: StreamBuilder<List<ExpenseModel>>(
         stream: firestore.getExpenses(userId, trip.id),
@@ -146,7 +151,7 @@ class TripDetailScreen extends StatelessWidget {
               final expense = expenses[index];
               return Card(
                 color: Colors.white,
-                elevation: 3,
+                elevation: 1,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18),
                 ),

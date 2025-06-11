@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:expensex/screens/show_add_trip.dart';
 import 'package:expensex/services/firestore_service.dart';
@@ -44,94 +45,82 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6FA),
       appBar: AppBar(
-        
-        title: FutureBuilder<String?>(
-          future: _fetchUserName(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
-            } else if (snapshot.hasError) {
-              return const Text('Error fetching name');
-            } else if (!snapshot.hasData || snapshot.data == null) {
-              return const Text('No name found');
-            } else {
-              return Text(
-                'Welcome, ${snapshot.data!}',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                   color: Colors.black,
-                ),
-              );
-            }
-          },
-        ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0,),
-          
-          child: CircleAvatar(
-            radius: 20,
-            backgroundColor: Color.fromARGB(255, 52, 69, 170),
-            child: Text(
-              (user?.email?.substring(0, 1).toUpperCase()) ?? 'U',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.onPrimary,
-              ),
-            ),
-          ),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: CircleAvatar(
-              backgroundColor: Colors.deepPurple[300],
-              child: const Icon(Icons.notifications, color: Colors.white),
-            ),
-          ),
-        ],
+        backgroundColor: Colors.white,
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildMonthlyCard(userId),
-          _buildTripListHeader(),
-          _buildTripList(userId),
-        ],
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            FutureBuilder<String?>(
+              future: _fetchUserName(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  return const Text('Error fetching name');
+                } else if (!snapshot.hasData || snapshot.data == null) {
+                  return const Text('No name found');
+                } else {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 3,
+                    children: [
+                      Text(
+                        'Welcome 👋',
+                        style: GoogleFonts.nunitoSans(
+                          fontSize: 22,
+                          color: Colors.grey.shade600,
+                          fontWeight: FontWeight.w500
+                        )
+                      ),
+                      Text(
+                        '${snapshot.data!}!',
+                        style:  GoogleFonts.nunitoSans(
+                          fontSize: 28,
+                          color: Colors.grey.shade900,
+                          fontWeight: FontWeight.w600
+                        )
+                      ),
+                    ],
+                  );
+                }
+              },
+            ),
+            SizedBox(height: 20,),
+            _buildMonthlyCard(userId),
+            _buildTripListHeader(),
+            _buildTripList(userId),
+          ],
+        ),
       ),
       floatingActionButton: _buildAddButton(context),
     );
   }
 
   Widget _buildMonthlyCard(String userId) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      child: StreamBuilder<List<Map<String, dynamic>>>(
-        stream: _firestore.getMonthlySummaries(userId),
-        builder: (context, snapshot) {
-          final monthlyTotal = _calculateMonthlyTotal(snapshot.data);
-
-          return Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF7F00FF), Color(0xFFE100FF)],
-              ),
-              borderRadius: BorderRadius.circular(20),
+    return StreamBuilder<List<Map<String, dynamic>>>(
+      stream: _firestore.getMonthlySummaries(userId),
+      builder: (context, snapshot) {
+        final monthlyTotal = _calculateMonthlyTotal(snapshot.data);
+    
+        return Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Color.fromARGB(255, 241, 238, 255), Color.fromARGB(255, 189, 181, 255)],
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildTotalDisplay(monthlyTotal),
-                _buildMonthDropdown(snapshot.data),
-              ],
-            ),
-          );
-        },
-      ),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildTotalDisplay(monthlyTotal),
+              _buildMonthDropdown(snapshot.data),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -148,17 +137,20 @@ class _HomeScreenState extends State<HomeScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'This Months Expense',
-          style: TextStyle(color: Colors.white70),
+        Text(
+          'This Months Expense', style: GoogleFonts.nunitoSans(
+            fontSize: 14,
+            color: Colors.grey.shade700,
+            fontWeight: FontWeight.w500
+          ),
         ),
         const SizedBox(height: 8),
         Text(
           '₹${total.toStringAsFixed(2)}',
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
+          style: GoogleFonts.nunitoSans(
+            fontSize: 30,
+            color: Colors.grey.shade900,
+            fontWeight: FontWeight.w700
           ),
         ),
       ],
@@ -171,10 +163,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return DropdownButton<String>(
       value: _selectedMonth,
-      dropdownColor: const Color.fromARGB(255, 140, 84, 238),
-      iconEnabledColor: Colors.white,
+      dropdownColor: const Color.fromARGB(255, 255, 255, 255),
+      iconEnabledColor: const Color.fromARGB(255, 25, 25, 25),
       underline: const SizedBox(),
-      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+      style: const TextStyle(color: Color.fromARGB(255, 27, 27, 27), fontWeight: FontWeight.bold),
       items: months
           .map((month) => DropdownMenuItem(value: month, child: Text(month)))
           .toList(),
@@ -183,14 +175,18 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildTripListHeader() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 8),
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             'Your Expenses',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: GoogleFonts.nunitoSans(
+              fontSize: 18,
+              color: Colors.grey.shade800,
+              fontWeight: FontWeight.w600
+            ),
           ),
           Text(
             "View all",
@@ -221,7 +217,6 @@ class _HomeScreenState extends State<HomeScreen> {
           }
 
           return ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
             itemCount: trips.length,
             itemBuilder: (context, index) {
               final trip = trips[index];
@@ -234,35 +229,73 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildTripCard(TripModel trip) {
-    return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(16),
-        title: Text(
-          trip.title,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+    return GestureDetector(
+      onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => TripDetailScreen(trip: trip)),
+              ),
+      child: Container(
+        padding: EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [ 
+            BoxShadow(
+              blurRadius: 20,
+              color: const Color.fromARGB(10, 0, 0, 0),
+            )
+          ]
         ),
-        subtitle: Text(
-          'Created on ${DateFormat.yMMMd().format(trip.createdAt)}',
-        ),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              'Total',
-              style: TextStyle(fontSize: 12, color: Colors.grey),
+            Column(
+              spacing: 3,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  trip.title,
+                  style: GoogleFonts.nunitoSans(
+                    fontSize: 24,
+                    color: Colors.grey.shade900,
+                    fontWeight: FontWeight.w600
+                  ),
+                ),
+      
+                Text(
+                  'Created on ${DateFormat.yMMMd().format(trip.createdAt)}',
+                  style: GoogleFonts.nunitoSans(
+                    fontSize: 16,
+                    color: Colors.grey.shade700,
+                    fontWeight: FontWeight.w500
+                  ),
+                ),
+              ],
             ),
-            Text(
-              '₹${trip.total.toStringAsFixed(2)}',
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
+      
+            Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                spacing: 2,
+                children: [
+                  Text(
+                    'Total',
+                    style: GoogleFonts.nunitoSans(
+                      fontSize: 14,
+                      color: Colors.grey.shade700,
+                      fontWeight: FontWeight.w500
+                    ),
+                  ),
+                  Text(
+                    '₹${trip.total.toStringAsFixed(2)}',
+                    style: GoogleFonts.nunitoSans(
+                      fontSize: 24,
+                      color: Colors.grey.shade900,
+                      fontWeight: FontWeight.w700
+                    ),
+                  ),
+                ],
+              ),
           ],
-        ),
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => TripDetailScreen(trip: trip)),
         ),
       ),
     );
