@@ -62,3 +62,6 @@ web/.dart_tool/
 # Symbolication and Obfuscation
 app.*.symbols
 app.*.map.json
+
+# FVM Version Cache
+.fvm/
