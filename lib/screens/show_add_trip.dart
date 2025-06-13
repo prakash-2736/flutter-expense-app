@@ -193,7 +193,11 @@ Future<void> showAddTripDialog(BuildContext context) async {
                             }
                           },
                     child: isSaving
-                        ? const CircularProgressIndicator(color: Colors.white)
+                        ?  SizedBox(
+                          height: 30,
+                          width: 30,
+                           child:   CircularProgressIndicator(color: Colors.white),
+                          ) 
                         :  Text('Create Trip',style: GoogleFonts.nunitoSans(),),
                   ),
                 ),
