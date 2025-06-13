@@ -11,6 +11,9 @@ import 'firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  FirebaseFirestore.instance.settings = Settings(
+    persistenceEnabled: false, // Add this line
+  );
   runApp(const MyApp());
 }
 

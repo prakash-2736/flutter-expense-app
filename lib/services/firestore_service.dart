@@ -76,6 +76,10 @@ class FirestoreService {
     return _tripRef(userId)
         .orderBy('createdAt', descending: true)
         .snapshots()
+        .handleError(
+          // ignore: avoid_print
+          (e) => print("Error fetching trips: $e"),
+        ) // Add error handler
         .map(
           (snap) => snap.docs
               .map(
@@ -86,6 +90,38 @@ class FirestoreService {
               )
               .toList(),
         );
+  }
+
+  Future<void> deleteTrip(
+    String userId,
+    String tripId,
+    String month,
+    double amount,
+  ) async {
+    final batch = _db.batch();
+
+    // Delete ALL associated expenses first
+    final expenses = await _tripRef(
+      userId,
+    ).doc(tripId).collection('expenses').get();
+
+    for (final doc in expenses.docs) {
+      batch.delete(doc.reference);
+    }
+
+    // Then delete trip document
+    batch.delete(_tripRef(userId).doc(tripId));
+
+    // Update monthly summary
+    final monthlyRef = _db
+        .collection('users')
+        .doc(userId)
+        .collection('monthlySummaries')
+        .doc(month);
+
+    batch.update(monthlyRef, {'total': FieldValue.increment(-amount)});
+
+    await batch.commit(); // Add await here
   }
 
   Stream<List<ExpenseModel>> getExpenses(String userId, String tripId) {
@@ -117,6 +153,3 @@ class FirestoreService {
         .map((snap) => snap.docs.map((doc) => doc.data()).toList());
   }
 }
-
-
-

@@ -283,7 +283,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                                   color: const Color.fromARGB(255, 173, 135, 238),
                                 ),
                                 const SizedBox(width: 8),
-                                Text(cat),
+                                Text(cat,style: GoogleFonts.nunitoSans(),),
                               ],
                             ),
                           ),

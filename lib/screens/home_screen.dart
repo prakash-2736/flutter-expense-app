@@ -1,7 +1,7 @@
-
 import 'package:expensex/utils/user.data.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:expensex/screens/show_add_trip.dart';
@@ -54,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 15),
+            const SizedBox(height: 25),
             UserData.name == null
                 ? const SizedBox()
                 : Column(
@@ -216,83 +216,220 @@ class _HomeScreenState extends State<HomeScreen> {
             return const Center(child: Text('No trips for selected month'));
           }
 
-          return ListView.builder(
+          return ListView.separated(
             itemCount: trips.length,
             itemBuilder: (context, index) {
               final trip = trips[index];
-              return _buildTripCard(trip);
+              return _buildTripCard(trip, userId);
             },
+            separatorBuilder: (BuildContext context, int index) =>
+                const SizedBox(height: 10),
           );
         },
       ),
     );
   }
 
-  Widget _buildTripCard(TripModel trip) {
-    return GestureDetector(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => TripDetailScreen(trip: trip)),
+  // Widget _buildTripCard(TripModel trip) {
+  //   return GestureDetector(
+  //     onTap: () => Navigator.push(
+  //       context,
+  //       MaterialPageRoute(builder: (_) => TripDetailScreen(trip: trip)),
+  //     ),
+  //     child: Container(
+  //       margin: EdgeInsets.only(bottom: 10),
+  //       padding: EdgeInsets.all(20),
+  //       decoration: BoxDecoration(
+  //         color: Colors.white,
+  //         borderRadius: BorderRadius.circular(20),
+  //         boxShadow: [
+  //           BoxShadow(blurRadius: 20, color: const Color.fromARGB(10, 0, 0, 0)),
+  //         ],
+  //       ),
+  //       child: Row(
+  //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //         children: [
+  //           Column(
+  //             spacing: 3,
+  //             crossAxisAlignment: CrossAxisAlignment.start,
+  //             children: [
+  //               Text(
+  //                 trip.title,
+  //                 style: GoogleFonts.nunitoSans(
+  //                   fontSize: 24,
+  //                   color: Colors.grey.shade900,
+  //                   fontWeight: FontWeight.w600,
+  //                 ),
+  //               ),
+
+  //               Text(
+  //                 'Created on ${DateFormat.yMMMd().format(trip.createdAt)}',
+  //                 style: GoogleFonts.nunitoSans(
+  //                   fontSize: 16,
+  //                   color: Colors.grey.shade700,
+  //                   fontWeight: FontWeight.w500,
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+
+  //           Column(
+  //             crossAxisAlignment: CrossAxisAlignment.end,
+  //             spacing: 2,
+  //             children: [
+  //               Text(
+  //                 'Total',
+  //                 style: GoogleFonts.nunitoSans(
+  //                   fontSize: 14,
+  //                   color: Colors.grey.shade700,
+  //                   fontWeight: FontWeight.w500,
+  //                 ),
+  //               ),
+  //               Text(
+  //                 '₹${trip.total.toStringAsFixed(2)}',
+  //                 style: GoogleFonts.nunitoSans(
+  //                   fontSize: 24,
+  //                   color: Colors.grey.shade900,
+  //                   fontWeight: FontWeight.w700,
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
+
+  Widget _buildTripCard(TripModel trip, String userId) {
+    return Slidable(
+      key: Key(trip.id),
+      endActionPane: ActionPane(
+        motion: const ScrollMotion(),
+
+        children: [
+          SlidableAction(
+            onPressed: (context) async {
+              final confirmed = await showDialog<bool>(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: const Text('Delete Trip?'),
+                  content: const Text('This action cannot be undone'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx, false),
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx, true),
+                      child: const Text(
+                        'Delete',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+
+              if (confirmed == true) {
+                try {
+                  await _firestore.deleteTrip(
+                    userId,
+                    trip.id,
+                    trip.month,
+                    trip.total,
+                  );
+                  if (mounted) {
+                    setState(() {
+                      _selectedMonth = _selectedMonth; // Trigger refresh
+                    });
+                  }
+                } catch (e) {
+                  if (!mounted) return;
+                  // ignore: use_build_context_synchronously
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error deleting trip: $e')),
+                  );
+                }
+              }
+            },
+            backgroundColor: Colors.red,
+            icon: Icons.delete,
+            borderRadius: BorderRadius.circular(20),
+
+            label: 'Delete',
+          ),
+        ],
       ),
-      child: Container(
-        padding: EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(blurRadius: 20, color: const Color.fromARGB(10, 0, 0, 0)),
-          ],
+      child: GestureDetector(
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => TripDetailScreen(trip: trip)),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              spacing: 3,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  trip.title,
-                  style: GoogleFonts.nunitoSans(
-                    fontSize: 24,
-                    color: Colors.grey.shade900,
-                    fontWeight: FontWeight.w600,
+        child: Container(
+          // margin: EdgeInsets.only(bottom: 10),
+          padding: EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                blurRadius: 20,
+                color: const Color.fromARGB(10, 0, 0, 0),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                spacing: 3,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    trip.title,
+                    style: GoogleFonts.nunitoSans(
+                      fontSize: 24,
+                      color: Colors.grey.shade900,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
 
-                Text(
-                  'Created on ${DateFormat.yMMMd().format(trip.createdAt)}',
-                  style: GoogleFonts.nunitoSans(
-                    fontSize: 16,
-                    color: Colors.grey.shade700,
-                    fontWeight: FontWeight.w500,
+                  Text(
+                    'Created on ${DateFormat.yMMMd().format(trip.createdAt)}',
+                    style: GoogleFonts.nunitoSans(
+                      fontSize: 16,
+                      color: Colors.grey.shade700,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
 
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              spacing: 2,
-              children: [
-                Text(
-                  'Total',
-                  style: GoogleFonts.nunitoSans(
-                    fontSize: 14,
-                    color: Colors.grey.shade700,
-                    fontWeight: FontWeight.w500,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                spacing: 2,
+                children: [
+                  Text(
+                    'Total',
+                    style: GoogleFonts.nunitoSans(
+                      fontSize: 14,
+                      color: Colors.grey.shade700,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                ),
-                Text(
-                  '₹${trip.total.toStringAsFixed(2)}',
-                  style: GoogleFonts.nunitoSans(
-                    fontSize: 24,
-                    color: Colors.grey.shade900,
-                    fontWeight: FontWeight.w700,
+                  Text(
+                    '₹${trip.total.toStringAsFixed(2)}',
+                    style: GoogleFonts.nunitoSans(
+                      fontSize: 24,
+                      color: Colors.grey.shade900,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

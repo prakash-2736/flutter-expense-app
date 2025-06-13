@@ -1,5 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:expensex/auth/auth_screen.dart';
+import 'package:expensex/utils/user.data.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -16,16 +17,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Future<String?> _fetchUserName() async {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid == null) return null;
 
-    final doc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .get();
-    return doc.data()?['name'] as String?;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,25 +80,21 @@ class ProfileScreen extends StatelessWidget {
                         ),
                         child: Column(
                           children: [
-                            FutureBuilder<String?>(
-                              future: _fetchUserName(),
-                              builder: (context, snapshot) {
-                                final name = snapshot.data ?? 'No Name';
-                                return Text(
-                                  name,
-                                  style:  GoogleFonts.nunitoSans(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.w700,
-                                    color: theme.colorScheme.primary,
+                            UserData.name == null
+                                ? const SizedBox()
+                                : Text(
+                                    '${UserData.name}',
+                                    style: GoogleFonts.nunitoSans(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w700,
+                                      color: theme.colorScheme.primary,
+                                    ),
+                                    textAlign: TextAlign.center,
                                   ),
-                                  textAlign: TextAlign.center,
-                                );
-                              },
-                            ),
-                            const SizedBox(height: 8),
+                            SizedBox(height: 8),
                             Text(
                               user?.email ?? 'No Email',
-                              style:  GoogleFonts.nunitoSans(
+                              style: GoogleFonts.nunitoSans(
                                 fontSize: 17,
                                 fontWeight: FontWeight.w500,
                                 color: theme.colorScheme.onSurface,
@@ -129,7 +117,7 @@ class ProfileScreen extends StatelessWidget {
                         icon: const Icon(Icons.logout, color: Colors.white),
                         label: Text(
                           'Logout',
-                          style:  GoogleFonts.nunitoSans(
+                          style: GoogleFonts.nunitoSans(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 0.5,
@@ -151,7 +139,7 @@ class ProfileScreen extends StatelessWidget {
                     // App version or copyright
                     Text(
                       'ExpenseX v1.0',
-                      style:  GoogleFonts.nunitoSans(
+                      style: GoogleFonts.nunitoSans(
                         color: theme.colorScheme.primary.withAlpha(120),
                         fontSize: 13,
                         letterSpacing: 1,
